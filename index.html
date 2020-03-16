@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nonogram</title>
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+canvas {
+  background: #eee;
+}
+table {
+  border-collapse: collapse;
+}
+
+#app[v-cloak] > * {
+  display: none;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+label {
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+table.image {
+  border-collapse: collapse;
+  border-style: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 0 0 3px #ccc; /* this draws the table border  */ 
+}
+table.image tr:first-child td:first-child {
+  border-top-left-radius: 1rem;
+}
+table.image tr:first-child td:last-child {
+  border-top-right-radius: 1rem;
+}
+table.image tr:last-child td:first-child {
+  border-bottom-left-radius: 1rem;
+}
+table.image tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}
+td {
+  border: 1px solid #ccc;
+}
+td.five {
+  border-left: 3px solid #ccc ;
+}
+tr.five td {
+  border-top: 3px solid #ccc  ;
+}
+#app.s5 td {
+  width: 50px;
+  height: 50px;
+}
+#app.s10 td {
+  width: 40px;
+  height: 40px;
+}
+#app.s15 td {
+  width: 30px;
+  height: 30px;
+}
+#app.s20 td {
+  width: 25px;
+  height: 25px;
+}
+#app.s15 .yhint>*, #app.s15 .xhint>* {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+#app.s20 .yhint>*, #app.s20 .xhint>* {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+td.o.o {
+  background-color: #516180;
+  border-color:#333;
+}
+.tophints, .lefthints {
+  position: absolute;
+  display: flex;
+  justify-content: space-evenly;
+}
+.tophints {
+  bottom: 100%;
+  min-height: 100px;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  flex-direction: row;
+}
+.tophints th {
+  vertical-align: bottom;
+}
+.lefthints {
+  right: 100%;
+  min-width: 100px;
+  height: 100%;
+  margin-right: 0.5rem;
+  flex-direction: column;
+}
+.xhint, .yhint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.yhint {
+  flex-direction: column;
+  width: 100%;
+}
+.xhint {
+  flex-direction: row;
+  height: 100%;
+}
+.yhint>* {
+  margin-top: 0.2rem;
+}
+.xhint>* {
+  margin-left: 0.2rem;
+}
+.yhint>*, .xhint>* {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #f3f3f3;
+  text-align: center;
+  font-weight: bold;
+  line-height: 22pt;
+  font-family: Arial, Helvetica, sans-serif;
+}
+</style>
+</head>
+<body>
+  <div id="app" v-cloak :class="`s${size}`">
+    <div class="tophints">
+      <div v-for="hints in hints.yHints" class="yhint">
+        <span v-for="hint in hints">{{ hint }}</span>
+      </div>
+    </div>
+    <div class="lefthints">
+      <div v-for="hints in hints.xHints" class="xhint">
+        <span v-for="hint in hints">{{ hint }}</span>
+      </div>
+    </div>
+    <table class="image">
+      <tr v-for="(row, j) in imageData" :class="{five: j % 5 == 0 && j > 0}">
+        <td
+          v-for="(cell, i) in row"
+          :class="{o: cell !== undefined, five: i % 5 == 0 && i > 0}"
+          @click.right.prevent
+          @mousedown.left="set(i,j)"
+          @mousedown.right="unset(i,j)"
+          @mouseenter="e => {set(i, j, e), unset(i, j, e)}"
+          @mousedrag.prevent
+        >
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div id="tools">
+    <label><input type="radio" v-model="size" value="5">5×5</label>
+    <label><input type="radio" v-model="size" value="10">10×10</label>
+    <label><input type="radio" v-model="size" value="15">15×15</label>
+    <label><input type="radio" v-model="size" value="20">20×20</label>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type="module" src="./main.js"></script>
+</html>
