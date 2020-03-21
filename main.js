@@ -118,11 +118,9 @@ let game = new Vue({
             this.imageData = imageTestable.getData()
         },
         reset () {
-            if (code) {
-                imageTestable = new Image(imageEdiable.size())
-                this.imageData = imageTestable.getData()
-                this.lives = LIVES
-            }
+            imageTestable = new Image(imageEdiable.size())
+            this.imageData = imageTestable.getData()
+            this.lives = LIVES
         },
         edit () {
             if (!code) {
