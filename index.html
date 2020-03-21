@@ -58,7 +58,15 @@ table {
 
 footer {
   position: absolute;
-  bottom: -8rem;
+  bottom: -11rem;
+  min-height: 10rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.hearts {
+  text-align: center;
 }
 
 .box[hidden] {
@@ -74,9 +82,6 @@ footer {
 }
 
 .box h2 {
-  position: absolute;
-  bottom: -4rem;
-  width: 100%;
   text-align: center;
 }
 
@@ -255,6 +260,7 @@ td.x.x::before {
         </tr>
       </table>
       <footer>
+        <h2>⬑create ⬏</h2>
         <div>
           <label><input type="radio" v-model="selSize" value="5">5×5</label>
           <label><input type="radio" v-model="selSize" value="10">10×10</label>
@@ -262,6 +268,7 @@ td.x.x::before {
           <label><input type="radio" v-model="selSize" value="20">20×20</label>
         </div>
         <button @click="generate()">test ▷</button>
+        <button @click="share()">🔗 share</button>
       </footer>
     </div>
     <div id="game" v-cloak class="box" :class="`s${size}`" :hidden="!visible"> 
@@ -294,11 +301,12 @@ td.x.x::before {
         </tr>
       </table>
       <footer>
-        <div>
+        <div class="hearts">
           <span v-for="heart in hearts">{{ heart }}</span>
         </div>
         <button @click="reset">↺ reset</button>
         <button v-if="editable" @click="edit">✎ edit</button>
+        <button v-if="editable" @click="share()">🔗 share</button>
       </footer>
     </div>
   </content>

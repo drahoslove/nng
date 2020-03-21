@@ -10,6 +10,10 @@ const code = location.hash.substr(1)
 let imageEdiable = code ? Image.fromCode(code) : new Image(10)
 let imageTestable = new Image(imageEdiable.size())
 
+const share = () => {
+    window.prompt('', window.location.origin + `#${imageEdiable.toCode()}`)
+}
+
 
 const LIVES = 5
 
@@ -60,7 +64,8 @@ let editor = new Vue({
             game.lives = LIVES
             game.visible = true
             this.visible = false
-        }
+        },
+        share,
     }
 })
 
@@ -125,6 +130,7 @@ let game = new Vue({
                 editor.visible = true
             }
         },
+        share,
     }
 })
 
