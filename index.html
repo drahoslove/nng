@@ -19,7 +19,7 @@ header {
   width: 100vw;
   text-align: center;
 }
-header a {
+a header {
   color: #333;
 }
 menu {
@@ -297,7 +297,8 @@ td.x.x::before {
         <div>
           <span v-for="heart in hearts">{{ heart }}</span>
         </div>
-        <button @click="cancel">✕ cancel</button>
+        <button @click="reset">↺ reset</button>
+        <button v-if="editable" @click="edit">✎ edit</button>
       </footer>
     </div>
   </content>

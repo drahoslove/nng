@@ -72,6 +72,7 @@ let game = new Vue({
         imageData: imageTestable.getData(),
         lives: LIVES,
         visible: !!code,
+        editable: !code,
     }),
     computed: {
         hearts() {
@@ -111,16 +112,19 @@ let game = new Vue({
             }
             this.imageData = imageTestable.getData()
         },
-        cancel () {
+        reset () {
+            if (code) {
+                imageTestable = new Image(imageEdiable.size())
+                this.imageData = imageTestable.getData()
+                this.lives = LIVES
+            }
+        },
+        edit () {
             if (!code) {
                 this.visible = false
                 editor.visible = true
-            } else {
-                imageEdiable = new Image(imageEdiable.size())
-                this.imageData = imageEdiable.getData()
-                this.lives = LIVES
             }
-        }
+        },
     }
 })
 
