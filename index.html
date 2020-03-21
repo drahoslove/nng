@@ -46,7 +46,7 @@ content {
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
-  height: calc(100% - 4rem);
+  height: calc(100% - 2rem);
   width: 100%;
 }
 canvas {
@@ -58,15 +58,40 @@ table {
 
 footer {
   position: absolute;
-  bottom: -11rem;
+  bottom: -12rem;
   min-height: 10rem;
   width: 100%;
   display: flex;
   flex-direction: column;
 }
+footer>* {
+  margin-bottom: .75rem;
+  padding: .25rem 0;
+}
+
+button {
+  cursor: pointer;
+}
 
 .hearts, .win {
   text-align: center;
+}
+.sizes {
+  display: flex;
+}
+.sizes label {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+}
+.sizes label:hover {
+  background: #eee;
+}
+.sizes label.selected {
+  font-weight: bold;
+}
+.sizes label input {
+  display: none;
 }
 
 .box[hidden] {
@@ -226,10 +251,6 @@ td.x.x::before {
       <h1>Nonogram</h1>
     </header>
   </a>
-  <!-- <menu id="tabs">
-    <button :class="{active: tab === 'edit'}" @click="activate('edit')">edit</button>
-    <button :class="{active: tab === 'test'}" @click="activate('test')">test</button>
-  </menu> -->
   <content>
     <div id="editor" v-cloak class="box" :class="`s${size}`" :hidden="!visible">
       <div class="tophints">
@@ -261,14 +282,14 @@ td.x.x::before {
       </table>
       <footer>
         <h2>⬑create ⬏</h2>
-        <div>
-          <label><input type="radio" v-model="selSize" value="5">5×5</label>
-          <label><input type="radio" v-model="selSize" value="10">10×10</label>
-          <label><input type="radio" v-model="selSize" value="15">15×15</label>
-          <label><input type="radio" v-model="selSize" value="20">20×20</label>
+        <div class="sizes">
+          <label :class="{selected: selSize==5}"><input  type="radio" v-model="selSize" value="5">5×5</label>
+          <label :class="{selected: selSize==10}"><input type="radio" v-model="selSize" value="10">10×10</label>
+          <label :class="{selected: selSize==15}"><input type="radio" v-model="selSize" value="15">15×15</label>
+          <label :class="{selected: selSize==20}"><input type="radio" v-model="selSize" value="20">20×20</label>
         </div>
         <button @click="generate()">test ▷</button>
-        <button @click="share()">🔗 share</button>
+        <button @click="share()">share 🔗</button>
       </footer>
     </div>
     <div id="game" v-cloak class="box" :class="`s${size}`" :hidden="!visible"> 
@@ -302,7 +323,7 @@ td.x.x::before {
       </table>
       <footer>
         <div v-if="win" class="win">💥 You did it! 🎉</div>
-        <div class="hearts">
+        <div v-if="!win"  class="hearts">
           <span v-for="heart in hearts">{{ heart }}</span>
         </div>
         <button @click="reset">↺ reset</button>
