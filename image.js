@@ -61,11 +61,15 @@ const newImage = (n) => {
 }
 
 const setPix = (image, i, j, val) => {
-    if (val) {
+    if (val === true) {
         image[j][i] = 0
-    } else {
-        delete image[j][i]
+        return
     }
+    if (val === false) {
+        delete image[j][i]
+        return
+    }
+    image[j][i] = val
 }
 
 const getPix = (image, i, j) => {

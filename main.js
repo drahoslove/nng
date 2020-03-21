@@ -7,70 +7,128 @@ window.onhashchange = () => {
 
 const code = location.hash.substr(1)
 
-let image = code
-    ? Image.fromCode(code)
-    : new Image(10)
+let imageEdiable = code ? Image.fromCode(code) : new Image(10)
+let imageTestable = new Image(imageEdiable.size())
 
-let app = new Vue({
-    el: '#app',
+
+const LIVES = 5
+
+let editor = new Vue({
+    el: '#editor',
     data: () => ({
-        imageData: image.data,
+        visible: !code,
+        imageData: imageEdiable.data,
+        selSize: imageEdiable.size(),
     }),
     computed: {
-        size: function () {
+        size () {
             return new Image(this.imageData).size()
         },
-        hints: function () {
+        hints () {
             return new Image(this.imageData).getHints()
         },
     },
+    watch: {
+        selSize (size, oldSize) {
+            if (size !== oldSize) {
+                imageEdiable = new Image(+size)
+                this.imageData = imageEdiable.getData()
+            }
+        }
+    },
     methods: {
-        set: function (i, j, e) {
+        set (i, j, e) {
             if (e && e.buttons !== 1) {
                 return
             }
-            image.set(i, j, true)
-            this.imageData = image.getData()
-            window.history.replaceState(null, null, `#${image.toCode()}`)
+            imageEdiable.set(i, j, true)
+            this.imageData = imageEdiable.getData()
         },
-        unset: function (i, j, e) {
+        unset (i, j, e) {
             if (e && e.buttons !== 2) {
                 return
             }
-            image.set(i, j, false)
-            this.imageData =  image.getData()
-            window.history.replaceState(null, null, `#${image.toCode()}`)
+            imageEdiable.set(i, j, false)
+            this.imageData =  imageEdiable.getData()
+        },
+        generate () {
+            window.history.replaceState(null, null, `#${imageEdiable.toCode()}`)
+            game.size = imageEdiable.size()
+            game.hints = imageEdiable.getHints()
+            imageTestable = new Image(imageEdiable.size())
+            game.imageData = imageTestable.getData()
+            game.lives = LIVES
+            game.visible = true
+            this.visible = false
         }
     }
 })
 
-let tools = new Vue({
-    el: '#tools',
-    data: {
-        size: image.size(),
-    },
-    watch: {
-        size: function(size, oldSize) {
-            if (size !== oldSize) {
-                image = new Image(+size)
-                app.imageData = image.getData()
-            }
+let game = new Vue({
+    el: '#game',
+    data: () => ({
+        size: imageEdiable.size(),
+        hints: imageEdiable.getHints(),
+        imageData: imageTestable.getData(),
+        lives: LIVES,
+        visible: !!code,
+    }),
+    computed: {
+        hearts() {
+            return [...new Array(this.lives).fill('❤️'), ...new Array(LIVES-this.lives).fill('🖤')]
         }
     },
+    methods: {
+        set (i, j, e) {
+            if (this.lives === 0) {
+                return
+            }
+            if (e && e.buttons !== 1) {
+                return 
+            }
+            if (imageEdiable.get(i, j)) {
+                imageTestable.set(i, j, 0)
+            } else {
+                console.warn('chyba', i, j)
+                this.lives--
+                imageTestable.set(i, j, 1)
+            }
+            this.imageData = imageTestable.getData()
+        },
+        mark (i, j, e) {
+            if (this.lives === 0) {
+                return
+            }
+            if (e && e.buttons !== 2) {
+                return 
+            }
+            if (!imageEdiable.get(i, j)) {
+                imageTestable.set(i, j, 1)
+            } else {
+                console.warn('chyba', i, j)
+                this.lives--
+                imageTestable.set(i, j, 0)
+            }
+            this.imageData = imageTestable.getData()
+        },
+        cancel () {
+            if (!code) {
+                this.visible = false
+                editor.visible = true
+            } else {
+                imageEdiable = new Image(imageEdiable.size())
+                this.imageData = imageEdiable.getData()
+                this.lives = LIVES
+            }
+        }
+    }
 })
 
-// console.log(Image.fromCode(new Array(15*15/5).fill('A').join('')))
-// console.log(Image.fromCode(new Array(15*15/5).fill('A').join('').slice(0,-1)+'B'))
-
-console.log(image.toString())
-console.log(image.toCode())
-console.log(Image.fromCode(image.toCode()).toString())
-console.log(Image.fromCode(image.toCode()).toCode())
 
 
-const hints = image.getHints()
 
-console.log('hints', hints)
+console.log(imageEdiable.toString())
+console.log(imageEdiable.toCode())
 
 
 

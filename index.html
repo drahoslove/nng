@@ -9,9 +9,45 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  font-family: cursive;
+}
+header {
+  width: 100vw;
+  text-align: center;
+}
+header a {
+  color: #333;
+}
+menu {
+  width: 100%;
+  height: 4rem;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+menu button {
+  flex: 1;
+  font-size: 28pt;
+  font-family: cursive;
+  cursor: pointer;
+  outline: none;
+}
+menu button.active {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
   align-items: center;
+  height: calc(100% - 4rem);
+  width: 100%;
 }
 canvas {
   background: #eee;
@@ -20,13 +56,28 @@ table {
   border-collapse: collapse;
 }
 
-#app[v-cloak] > * {
+footer {
+  position: absolute;
+  bottom: -8rem;
+}
+
+.box[hidden] {
   display: none;
 }
-#app {
+.box[v-cloak] > * {
+  display: none;
+}
+.box {
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.box h2 {
+  position: absolute;
+  bottom: -4rem;
+  width: 100%;
+  text-align: center;
 }
 
 label {
@@ -61,27 +112,27 @@ td.five {
 tr.five td {
   border-top: 3px solid #ccc  ;
 }
-#app.s5 td {
+.box.s5 td {
   width: 50px;
   height: 50px;
 }
-#app.s10 td {
+.box.s10 td {
   width: 40px;
   height: 40px;
 }
-#app.s15 td {
+.box.s15 td {
   width: 30px;
   height: 30px;
 }
-#app.s20 td {
+.box.s20 td {
   width: 25px;
   height: 25px;
 }
-#app.s15 .yhint>*, #app.s15 .xhint>* {
+.box.s15 .yhint>*, .box.s15 .xhint>* {
   width: 1.75rem;
   height: 1.75rem;
 }
-#app.s20 .yhint>*, #app.s20 .xhint>* {
+.box.s20 .yhint>*, .box.s20 .xhint>* {
   width: 1.5rem;
   height: 1.5rem;
 }
@@ -90,6 +141,26 @@ td.o.o {
   background-color: #516180;
   border-color:#333;
 }
+
+td.x.x {
+  background-color: whitesmoke;
+  position: relative;
+}
+td.x.x::before {
+  content: 'X';
+  color: #666666;
+  opacity: .2;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
 .tophints, .lefthints {
   position: absolute;
   display: flex;
@@ -145,38 +216,91 @@ td.o.o {
 </style>
 </head>
 <body>
-  <div id="app" v-cloak :class="`s${size}`">
-    <div class="tophints">
-      <div v-for="hints in hints.yHints" class="yhint">
-        <span v-for="hint in hints">{{ hint }}</span>
+  <a href=".">
+    <header>
+      <h1>Nonogram</h1>
+    </header>
+  </a>
+  <!-- <menu id="tabs">
+    <button :class="{active: tab === 'edit'}" @click="activate('edit')">edit</button>
+    <button :class="{active: tab === 'test'}" @click="activate('test')">test</button>
+  </menu> -->
+  <content>
+    <div id="editor" v-cloak class="box" :class="`s${size}`" :hidden="!visible">
+      <div class="tophints">
+        <div v-for="hints in hints.yHints" class="yhint">
+          <span v-for="hint in hints">{{ hint }}</span>
+        </div>
       </div>
-    </div>
-    <div class="lefthints">
-      <div v-for="hints in hints.xHints" class="xhint">
-        <span v-for="hint in hints">{{ hint }}</span>
+      <div class="lefthints">
+        <div v-for="hints in hints.xHints" class="xhint">
+          <span v-for="hint in hints">{{ hint }}</span>
+        </div>
       </div>
+      <table class="image">
+        <tr v-for="(row, j) in imageData" :class="{five: j % 5 == 0 && j > 0}">
+          <td
+            v-for="(cell, i) in row"
+            :class="{
+              five: i % 5 == 0 && i > 0,
+              o: cell !== undefined,
+            }"
+            @click.right.prevent
+            @mousedown.left="set(i,j)"
+            @mousedown.right="unset(i,j)"
+            @mouseenter="e => {set(i, j, e), unset(i, j, e)}"
+            @mousedrag.prevent
+          >
+          </td>
+        </tr>
+      </table>
+      <footer>
+        <div>
+          <label><input type="radio" v-model="selSize" value="5">5×5</label>
+          <label><input type="radio" v-model="selSize" value="10">10×10</label>
+          <label><input type="radio" v-model="selSize" value="15">15×15</label>
+          <label><input type="radio" v-model="selSize" value="20">20×20</label>
+        </div>
+        <button @click="generate()">test ▷</button>
+      </footer>
     </div>
-    <table class="image">
-      <tr v-for="(row, j) in imageData" :class="{five: j % 5 == 0 && j > 0}">
-        <td
-          v-for="(cell, i) in row"
-          :class="{o: cell !== undefined, five: i % 5 == 0 && i > 0}"
-          @click.right.prevent
-          @mousedown.left="set(i,j)"
-          @mousedown.right="unset(i,j)"
-          @mouseenter="e => {set(i, j, e), unset(i, j, e)}"
-          @mousedrag.prevent
-        >
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div id="tools">
-    <label><input type="radio" v-model="size" value="5">5×5</label>
-    <label><input type="radio" v-model="size" value="10">10×10</label>
-    <label><input type="radio" v-model="size" value="15">15×15</label>
-    <label><input type="radio" v-model="size" value="20">20×20</label>
-  </div>
+    <div id="game" v-cloak class="box" :class="`s${size}`" :hidden="!visible"> 
+      <div class="tophints">
+        <div v-for="hints in hints.yHints" class="yhint">
+          <span v-for="hint in hints">{{ hint }}</span>
+        </div>
+      </div>
+      <div class="lefthints">
+        <div v-for="hints in hints.xHints" class="xhint">
+          <span v-for="hint in hints">{{ hint }}</span>
+        </div>
+      </div>
+      <table class="image">
+        <tr v-for="(row, j) in imageData" :class="{five: j % 5 == 0 && j > 0}">
+          <td
+            v-for="(cell, i) in row"
+            :class="{
+              five: i % 5 == 0 && i > 0,
+              o: cell === 0,
+              x: cell === 1,
+            }"
+            @click.right.prevent
+            @mousedown.left="set(i,j)"
+            @mousedown.right="mark(i,j)"
+            @mouseenter="e => {set(i, j, e), mark(i, j, e)}"
+            @mousedrag.prevent
+          >
+          </td>
+        </tr>
+      </table>
+      <footer>
+        <div>
+          <span v-for="heart in hearts">{{ heart }}</span>
+        </div>
+        <button @click="cancel">✕ cancel</button>
+      </footer>
+    </div>
+  </content>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script type="module" src="./main.js"></script>
