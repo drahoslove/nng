@@ -65,7 +65,7 @@ footer {
   flex-direction: column;
 }
 
-.hearts {
+.hearts, .win {
   text-align: center;
 }
 
@@ -301,6 +301,7 @@ td.x.x::before {
         </tr>
       </table>
       <footer>
+        <div v-if="win" class="win">💥 You did it! 🎉</div>
         <div class="hearts">
           <span v-for="heart in hearts">{{ heart }}</span>
         </div>

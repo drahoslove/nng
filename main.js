@@ -14,6 +14,16 @@ const share = () => {
     window.prompt('', window.location.origin + `#${imageEdiable.toCode()}`)
 }
 
+const isWin = () => {
+    let win = true
+    imageEdiable.each((i, j, val) => {
+        if (val && !imageTestable.get(i, j)) {
+            win = false
+        }
+    })
+    return win
+}
+
 
 const LIVES = 5
 
@@ -62,6 +72,7 @@ let editor = new Vue({
             imageTestable = new Image(imageEdiable.size())
             game.imageData = imageTestable.getData()
             game.lives = LIVES
+            game.win = false
             game.visible = true
             this.visible = false
         },
@@ -78,6 +89,7 @@ let game = new Vue({
         lives: LIVES,
         visible: !!code,
         editable: !code,
+        win: false,
     }),
     computed: {
         hearts() {
@@ -92,6 +104,9 @@ let game = new Vue({
             if (e && e.buttons !== 1) {
                 return 
             }
+            if (imageTestable.get(i, j)) { // already touched
+                return
+            }
             if (imageEdiable.get(i, j)) {
                 imageTestable.set(i, j, 0)
             } else {
@@ -100,6 +115,7 @@ let game = new Vue({
                 imageTestable.set(i, j, 1)
             }
             this.imageData = imageTestable.getData()
+            this.win = isWin()
         },
         mark (i, j, e) {
             if (this.lives === 0) {
@@ -107,6 +123,9 @@ let game = new Vue({
             }
             if (e && e.buttons !== 2) {
                 return 
+            }
+            if (imageTestable.get(i, j)) { // already touched
+                return
             }
             if (!imageEdiable.get(i, j)) {
                 imageTestable.set(i, j, 1)
@@ -121,6 +140,7 @@ let game = new Vue({
             imageTestable = new Image(imageEdiable.size())
             this.imageData = imageTestable.getData()
             this.lives = LIVES
+            this.win = false
         },
         edit () {
             if (!code) {
