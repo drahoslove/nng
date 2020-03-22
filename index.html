@@ -66,11 +66,18 @@ footer {
 }
 footer>* {
   margin-bottom: .75rem;
-  padding: .25rem 0;
 }
 
-button {
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.buttons button {
+  flex: 1;
   cursor: pointer;
+  padding: .5rem 0;
+  margin: 0 .25rem;
 }
 
 .hearts, .win {
@@ -158,14 +165,7 @@ tr.five td {
   width: 25px;
   height: 25px;
 }
-.box.s15 .yhint>*, .box.s15 .xhint>* {
-  width: 1.75rem;
-  height: 1.75rem;
-}
-.box.s20 .yhint>*, .box.s20 .xhint>* {
-  width: 1.5rem;
-  height: 1.5rem;
-}
+
 
 td.o.o {
   background-color: #516180;
@@ -221,10 +221,12 @@ td.x.x::before {
 .yhint {
   flex-direction: column;
   width: 100%;
+  max-height: 10.25rem;
 }
 .xhint {
   flex-direction: row;
   height: 100%;
+  max-width: 10.25rem;
 }
 .yhint>* {
   margin-top: 0.2rem;
@@ -234,14 +236,28 @@ td.x.x::before {
 }
 .yhint>*, .xhint>* {
   display: block;
-  width: 2rem;
-  height: 2rem;
   border-radius: 50%;
   background-color: #f3f3f3;
   text-align: center;
   font-weight: bold;
   line-height: 22pt;
   font-family: Arial, Helvetica, sans-serif;
+  flex-basis: 1.5rem;
+  overflow: hidden;
+}
+
+.box .ball {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+}
+.box.s15 .ball {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+.box.s20 .ball {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 </style>
 </head>
@@ -255,12 +271,16 @@ td.x.x::before {
     <div id="editor" v-cloak class="box" :class="`s${size}`" :hidden="!visible">
       <div class="tophints">
         <div v-for="hints in hints.yHints" class="yhint">
-          <span v-for="hint in hints">{{ hint }}</span>
+          <span v-for="hint in hints">
+            <span class="ball">{{ hint }}</span>
+          </span>
         </div>
       </div>
       <div class="lefthints">
         <div v-for="hints in hints.xHints" class="xhint">
-          <span v-for="hint in hints">{{ hint }}</span>
+          <span v-for="hint in hints">
+            <span class="ball">{{ hint }}</span>
+          </span>
         </div>
       </div>
       <table class="image">
@@ -288,19 +308,25 @@ td.x.x::before {
           <label :class="{selected: selSize==15}"><input type="radio" v-model="selSize" value="15">15×15</label>
           <label :class="{selected: selSize==20}"><input type="radio" v-model="selSize" value="20">20×20</label>
         </div>
-        <button @click="generate()">test ▷</button>
-        <button @click="share()">share 🔗</button>
+        <div class="buttons">
+          <button @click="generate()">test ▷</button>
+          <button @click="share()">share 🔗</button>
+        </div>
       </footer>
     </div>
     <div id="game" v-cloak class="box" :class="`s${size}`" :hidden="!visible"> 
       <div class="tophints">
         <div v-for="hints in hints.yHints" class="yhint">
-          <span v-for="hint in hints">{{ hint }}</span>
+          <span v-for="hint in hints">
+            <span class="ball">{{ hint }}</span>
+          </span>
         </div>
       </div>
       <div class="lefthints">
         <div v-for="hints in hints.xHints" class="xhint">
-          <span v-for="hint in hints">{{ hint }}</span>
+          <span v-for="hint in hints">
+            <span class="ball">{{ hint }}</span>
+          </span>
         </div>
       </div>
       <table class="image">
@@ -326,9 +352,11 @@ td.x.x::before {
         <div v-if="!win"  class="hearts">
           <span v-for="heart in hearts">{{ heart }}</span>
         </div>
-        <button @click="reset">↺ reset</button>
-        <button v-if="editable" @click="edit">✎ edit</button>
-        <button v-if="editable" @click="share()">🔗 share</button>
+        <div class="buttons">
+          <button @click="reset">↺ reset</button>
+          <button v-if="editable" @click="edit">✎ edit</button>
+          <button v-if="editable" @click="share()">🔗 share</button>
+        </div>
       </footer>
     </div>
   </content>
