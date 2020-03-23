@@ -1,4 +1,4 @@
-import { range } from './common.js'
+import { range, BASE32 } from './common.js'
 import Image from './image.js'
 
 window.onhashchange = () => {
@@ -12,6 +12,14 @@ let imageTestable = new Image(imageEdiable.size())
 
 const share = () => {
     window.prompt('', window.location.origin + `#${imageEdiable.toCode()}`)
+}
+
+const random = () => {
+    const size = imageEdiable.size()
+    const randomCode = range(size*size/5).map(i => (
+        BASE32[Math.floor(Math.random()*32)]
+    )).join('')
+    window.location = window.location.origin + `#${randomCode}`
 }
 
 const isWin = () => {
@@ -76,6 +84,7 @@ let editor = new Vue({
             game.visible = true
             this.visible = false
         },
+        random,
         share,
     }
 })
@@ -148,7 +157,11 @@ let game = new Vue({
                 editor.visible = true
             }
         },
+        home () {
+            window.location = window.location.origin
+        },
         share,
+        random,
     }
 })
 

@@ -311,6 +311,7 @@ td.x.x::before {
         <div class="buttons">
           <button @click="generate()">test ▷</button>
           <button @click="share()">share 🔗</button>
+          <button @click="random()">random 🎲</button>
         </div>
       </footer>
     </div>
@@ -353,9 +354,10 @@ td.x.x::before {
           <span v-for="heart in hearts">{{ heart }}</span>
         </div>
         <div class="buttons">
-          <button @click="reset">↺ reset</button>
           <button v-if="editable" @click="edit">✎ edit</button>
           <button v-if="editable" @click="share()">🔗 share</button>
+          <button @click="reset">↺ reset</button>
+          <button v-if="!editable"  @click="home()">🏠 home</button>
         </div>
       </footer>
     </div>
